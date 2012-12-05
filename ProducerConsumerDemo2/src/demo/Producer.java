@@ -4,23 +4,23 @@ import java.util.Random;
 
 public class Producer implements Runnable {
 
-	private Sp mess;
+	private Sp sp;
 
-	public Producer(Sp mess) {
-		this.mess = mess;
+	public Producer(Sp sp) {
+		this.sp = sp;
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		for (int i = 0;	i < new Random().nextInt(50); i++) {
-			mess.put("Message " + i);
+		for (int i = 0; i < Constant.number_sp; i++) {
+			sp.put("San pham "  + i);
 			try {
 				Thread.sleep(new Random().nextInt(5000));
 			} catch (InterruptedException e) {
-                System.out.println("Error in Producer class.");				
+				System.out.println("Error in Producer class.");                                
 			}
 		}
-		mess.put("DONE");
+		sp.put("HET");
 	}
 }

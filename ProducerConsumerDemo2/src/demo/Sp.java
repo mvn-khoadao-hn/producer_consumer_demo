@@ -1,42 +1,46 @@
 package demo;
 
+import java.util.ArrayList;
+
 public class Sp {
-    // Message sent from producer to consumer.
-    private String message;
-    // True if consumer should wait for producer to send message,
-    // false if producer should wait for consumer to retrieve message.
-    private boolean empty = true;
+	// Message sent from producer to consumer.
+	private ArrayList<String> lstSanpham = new ArrayList<String>(Constant.max_sp);
+	private int count = 0;
 
-    public synchronized String take() {
-        // Wait until message is available.
-        while (empty) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                System.out.println("Error in when take message.");	            	
-            }
-        }
-        // Toggle status.
-        empty = true;
-        // Notify producer that status has changed.
-        notifyAll();
-        return message;
-    }
+	public synchronized String get() {
 
-    public synchronized void put(String message) {
-        // Wait until message has been retrieved.
-        while (!empty) {
-            try { 
-                wait();
-            } catch (InterruptedException e) {
-                System.out.println("Error in when put message.");	            	
-            }
-        }
-        // Toggle status.
-        empty = false;
-        // Store message.
-        this.message = message;
-        // Notify consumer that status has changed.
-        notifyAll();
-    }
+		if(count == 0)
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				System.out.println("Error in when take message.");                     
+			}
+
+		String message = lstSanpham.get(0);
+		lstSanpham.remove(0);
+		count--;
+		System.out.println("So san pham trong kho sau khi lay ra: " + count);
+
+		if(count == Constant.max_sp - 1)
+			notifyAll();
+
+		return message;
+	}
+
+	public synchronized void put(String sp) {
+
+		if(count == Constant.max_sp)
+			try {              
+				wait();
+			} catch (InterruptedException e) {
+				System.out.println("Error in when put message.");                      
+			}
+
+		this.lstSanpham.add(sp);
+		count++;
+		System.out.println("So san pham trong kho sau khi them vao: " + count);
+
+		if(count == 1)
+			notifyAll();
+	}
 }
